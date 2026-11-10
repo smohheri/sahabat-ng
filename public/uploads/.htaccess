@@ -1,0 +1,11 @@
+# Prevent directory listing
+Options -Indexes
+
+# Allow direct file access
+Order allow,deny
+Allow from all
+
+# Deny access to PHP files and other executables
+<FilesMatch "\.(php|exe|bat|sh|cgi)$">
+    Deny from all
+</FilesMatch>
