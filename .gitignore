@@ -129,3 +129,8 @@ _modules/*
 # CodeGraph Index (local)
 #-------------------------
 .codegraph/
+
+#-------------------------
+# OpenCode (local)
+#-------------------------
+.opencode/
