@@ -2,138 +2,130 @@
 $role = strtolower((string) ($currentUser['role'] ?? ''));
 ?>
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-100">
+<html lang="id" class="h-full bg-stone-100">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
-    <title><?= esc($title ?? 'Dashboard') ?></title>
+    <title><?= esc($title ?? 'Dashboard') ?> · SAHABAT-NG</title>
     <link rel="icon" href="<?= favicon_url() ?>">
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
-    <script>
-        // Komponen searchable-select (ala Select2) untuk pilihan Wilayah.
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('regionPicker', (config = {}) => ({
-                provinsi: config.provinsi || [],
-                kabupaten: config.kabupaten || [],
-                provinsiId: config.provinsiId || '',
-                kabupatenId: config.kabupatenId || '',
-
-                provinsiOpen: false,
-                kabupatenOpen: false,
-                provinsiSearch: '',
-                kabupatenSearch: '',
-
-                get filteredProvinsi() {
-                    const s = this.provinsiSearch.trim().toLowerCase();
-                    return s === '' ? this.provinsi : this.provinsi.filter(p => String(p.label).toLowerCase().includes(s));
-                },
-                get provinsiLabel() {
-                    const p = this.provinsi.find(x => String(x.value) === String(this.provinsiId));
-                    return p ? p.label : '';
-                },
-                selectProvinsi(p) {
-                    this.provinsiId = String(p.value);
-                    this.kabupatenId = '';
-                    this.provinsiOpen = false;
-                    this.provinsiSearch = '';
-                },
-
-                get daftarKabupaten() {
-                    if (this.provinsiId === '') {
-                        return this.kabupaten;
-                    }
-                    return this.kabupaten.filter(k => String(k.provinsi) === String(this.provinsiId));
-                },
-                get filteredKabupaten() {
-                    const s = this.kabupatenSearch.trim().toLowerCase();
-                    return s === '' ? this.daftarKabupaten : this.daftarKabupaten.filter(k => String(k.label).toLowerCase().includes(s));
-                },
-                get kabupatenLabel() {
-                    const k = this.kabupaten.find(x => String(x.value) === String(this.kabupatenId));
-                    return k ? k.label : '';
-                },
-                selectKabupaten(k) {
-                    this.kabupatenId = String(k.value);
-                    this.kabupatenOpen = false;
-                    this.kabupatenSearch = '';
-                },
-            }));
-        });
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                    },
-                },
-            },
-        };
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+                    colors: { brand: { 50:'#ecfdf5',100:'#d1fae5',200:'#a7f3d0',300:'#6ee7b7',400:'#34d399',500:'#10b981',600:'#059669',700:'#047857',800:'#065f46',900:'#064e3b' } }
+                }
+            }
+        }
     </script>
-
-    <style>
-        [x-cloak] { display: none !important; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        .scrollbar-hidden { scrollbar-width: none; -ms-overflow-style: none; }
-        .scrollbar-hidden::-webkit-scrollbar { display: none; }
-    </style>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('regionPicker', (config = {}) => ({
+                provinsi: config.provinsi || [],
+                kabupaten: config.kabupaten || [],
+                provinsiId: config.initialProvinsiId ? String(config.initialProvinsiId) : '',
+                kabupatenId: config.initialKabupatenId ? String(config.initialKabupatenId) : '',
+                provinsiOpen: false,
+                kabupatenOpen: false,
+                provinsiQuery: '',
+                kabupatenQuery: '',
+                get provinsiName() {
+                    const found = this.provinsi.find(item => String(item.id) === String(this.provinsiId));
+                    return found ? found.name : '';
+                },
+                get kabupatenName() {
+                    const found = this.kabupaten.find(item => String(item.id) === String(this.kabupatenId));
+                    return found ? found.name : '';
+                },
+                get filteredProvinsi() {
+                    const q = this.provinsiQuery.toLowerCase().trim();
+                    if (!q) return this.provinsi;
+                    return this.provinsi.filter(item => item.name.toLowerCase().includes(q));
+                },
+                get filteredKabupaten() {
+                    const q = this.kabupatenQuery.toLowerCase().trim();
+                    if (!q) return this.kabupaten;
+                    return this.kabupaten.filter(item => item.name.toLowerCase().includes(q));
+                },
+                init() {
+                    if (this.provinsiId) {
+                        this.loadKabupaten(this.provinsiId, this.kabupatenId);
+                    }
+                },
+                selectProvinsi(item) {
+                    this.provinsiId = String(item.id);
+                    this.provinsiQuery = '';
+                    this.provinsiOpen = false;
+                    this.loadKabupaten(item.id, '');
+                },
+                selectKabupaten(item) {
+                    this.kabupatenId = String(item.id);
+                    this.kabupatenQuery = '';
+                    this.kabupatenOpen = false;
+                },
+                async loadKabupaten(provId, selectedId) {
+                    this.kabupaten = [];
+                    this.kabupatenId = selectedId ? String(selectedId) : '';
+                    if (!provId) return;
+                    try {
+                        const response = await fetch('<?= site_url('wilayah/kabupaten/') ?>' + provId);
+                        if (!response.ok) throw new Error('Gagal memuat kabupaten');
+                        this.kabupaten = await response.json();
+                    } catch (error) {
+                        this.kabupaten = [];
+                    }
+                }
+            }));
+        });
+    </script>
+    <style>[x-cloak]{display:none !important}</style>
     <?= $this->renderSection('head') ?>
 </head>
-<body class="h-full font-sans text-slate-800 antialiased" x-data="{ mobileSidebar: false }">
-    <div class="flex h-full">
-        <!-- Desktop sidebar -->
-        <div class="hidden lg:block">
-            <?= view('partials/sidebar', ['currentUser' => $currentUser, 'settings' => $settings]) ?>
+<body class="h-full font-sans text-stone-800 antialiased">
+    <div x-data="{ sidebarOpen: false }" class="flex h-full min-h-screen bg-stone-100">
+        <div x-cloak x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-40 bg-stone-900/50 lg:hidden"></div>
+
+        <div :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed inset-y-0 left-0 z-50 w-72 transition-transform duration-200 lg:static lg:translate-x-0">
+            <?= view('partials/sidebar') ?>
         </div>
 
-        <!-- Mobile sidebar -->
-        <div x-cloak x-show="mobileSidebar" class="fixed inset-0 z-40 lg:hidden">
-            <div class="absolute inset-0 bg-slate-900/60" @click="mobileSidebar = false"></div>
-            <div class="relative z-50 h-full w-72 max-w-[85%]">
-                <?= view('partials/sidebar', ['currentUser' => $currentUser, 'settings' => $settings]) ?>
-            </div>
-        </div>
-
-        <div class="flex min-w-0 flex-1 flex-col">
-            <header class="sticky top-0 z-30 border-b border-slate-200 bg-white/90 backdrop-blur">
-                <div class="flex h-16 items-center gap-4 px-4 sm:px-6 lg:px-8">
-                    <button type="button" @click="mobileSidebar = true" class="rounded-lg border border-slate-200 p-2 text-slate-600 lg:hidden">
-                        <i class="fa-solid fa-bars"></i>
-                    </button>
-
-                    <div class="min-w-0 flex-1">
-                        <h1 class="truncate text-lg font-semibold text-slate-900"><?= esc($pageTitle ?? $title ?? 'Dashboard') ?></h1>
-                        <p class="hidden text-xs text-slate-500 sm:block"><?= esc($settings['nama_lksa'] ?? 'LKSA Harapan Bangsa') ?></p>
+        <div class="flex min-h-screen min-w-0 flex-1 flex-col">
+            <header class="sticky top-0 z-30 border-b border-stone-200 bg-white">
+                <div class="flex items-center justify-between gap-3 px-4 py-3 sm:px-6 lg:px-8">
+                    <div class="flex min-w-0 items-center gap-3">
+                        <button type="button" @click="sidebarOpen = true" class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 lg:hidden" aria-label="Buka menu">
+                            <i class="fa-solid fa-bars"></i>
+                        </button>
+                        <div class="min-w-0">
+                            <h1 class="truncate text-base font-bold text-stone-900 sm:text-lg"><?= esc($title ?? 'Dashboard') ?></h1>
+                            <p class="truncate text-xs text-stone-500"><?= esc($settings['nama_lksa'] ?? 'SAHABAT-NG') ?></p>
+                        </div>
                     </div>
 
-                    <div x-data="{ open: false }" class="relative">
-                        <button type="button" @click="open = !open" class="flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2 text-left transition hover:bg-slate-50">
-                            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-semibold text-white">
-                                <?= esc(strtoupper(mb_substr((string) ($currentUser['nama'] ?? 'U'), 0, 1))) ?>
+                    <div class="relative" x-data="{ open: false }">
+                        <button type="button" @click="open = !open" class="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-700 hover:bg-stone-50">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 font-semibold text-emerald-700">
+                                <?= esc(mb_strtoupper(mb_substr($currentUser['nama'] ?? 'U', 0, 1))) ?>
                             </span>
-                            <span class="hidden sm:block">
-                                <span class="block text-sm font-semibold leading-4 text-slate-800"><?= esc($currentUser['nama'] ?? 'Pengguna') ?></span>
-                                <span class="block text-[11px] capitalize text-slate-500"><?= esc($currentUser['role'] ?? '') ?></span>
-                            </span>
-                            <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+                            <span class="hidden max-w-[10rem] truncate sm:inline"><?= esc($currentUser['nama'] ?? 'User') ?></span>
+                            <i class="fa-solid fa-chevron-down text-xs text-stone-400"></i>
                         </button>
 
-                        <div x-cloak x-show="open" @click.outside="open = false" class="absolute right-0 z-50 mt-2 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl">
-                            <div class="border-b border-slate-100 px-4 py-3">
-                                <p class="truncate text-sm font-semibold text-slate-800"><?= esc($currentUser['nama'] ?? '') ?></p>
-                                <p class="truncate text-xs text-slate-500">@<?= esc($currentUser['username'] ?? '') ?></p>
+                        <div x-cloak x-show="open" @click.outside="open = false" class="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-lg">
+                            <div class="border-b border-stone-100 px-4 py-3">
+                                <p class="truncate text-sm font-semibold text-stone-800"><?= esc($currentUser['nama'] ?? '') ?></p>
+                                <p class="truncate text-xs text-stone-500">@<?= esc($currentUser['username'] ?? '') ?></p>
                             </div>
-                            <a href="<?= site_url('logout') ?>" class="flex items-center gap-2 px-4 py-2.5 text-sm text-rose-600 transition hover:bg-rose-50">
+                            <a href="<?= site_url('logout') ?>" class="flex items-center gap-2 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50">
                                 <i class="fa-solid fa-right-from-bracket"></i> Keluar
                             </a>
                         </div>
@@ -141,33 +133,34 @@ $role = strtolower((string) ($currentUser['role'] ?? ''));
                 </div>
             </header>
 
-            <main class="flex-1 overflow-y-auto scrollbar-hidden p-4 sm:p-6 lg:p-8">
+            <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                 <div class="w-full">
                     <?= view('partials/flash') ?>
                     <?= $content ?>
                 </div>
             </main>
 
-            <footer class="border-t border-slate-200 bg-white px-4 py-3 text-center text-xs text-slate-500 sm:px-6 lg:px-8">
-                &copy; <?= date('Y') ?> <?= esc($settings['nama_lksa'] ?? 'LKSA Harapan Bangsa') ?> &middot; SAHABAT-NG
+            <footer class="border-t border-stone-200 bg-white px-4 py-3 text-center text-xs text-stone-500 sm:px-6 lg:px-8">
+                &copy; <?= date('Y') ?> <?= esc($settings['nama_lksa'] ?? 'LKSA Harapan Bangsa') ?> · SAHABAT-NG
             </footer>
         </div>
     </div>
 
-    <!-- Modal konfirmasi -->
     <div id="confirm-modal" class="fixed inset-0 z-[70] hidden items-center justify-center p-4" role="dialog" aria-modal="true">
-        <div id="confirm-backdrop" class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"></div>
-        <div class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl ring-1 ring-slate-200">
-            <div class="p-6">
-                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-amber-100 text-amber-600">
-                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+        <div id="confirm-backdrop" class="absolute inset-0 bg-stone-900/50"></div>
+        <div class="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-stone-200">
+            <div class="flex items-start gap-4 px-5 pt-5">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
                 </div>
-                <h3 class="mt-4 text-center text-base font-bold text-slate-900">Konfirmasi</h3>
-                <p id="confirm-message" class="mt-2 text-center text-sm leading-relaxed text-slate-500"></p>
+                <div class="min-w-0 flex-1">
+                    <h3 class="text-base font-bold text-stone-900">Konfirmasi tindakan</h3>
+                    <p id="confirm-message" class="mt-1.5 text-sm leading-relaxed text-stone-600"></p>
+                </div>
             </div>
-            <div class="flex justify-end gap-2 border-t border-slate-100 bg-slate-50 px-6 py-4">
-                <button type="button" id="confirm-cancel" class="rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">Batal</button>
-                <button type="button" id="confirm-ok" class="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-5 py-2.5 text-xs font-bold text-white transition hover:bg-indigo-700"><i class="fa-solid fa-check"></i> Ya, Lanjutkan</button>
+            <div class="mt-5 flex items-center justify-end gap-2 border-t border-stone-100 bg-stone-50 px-5 py-3">
+                <button type="button" id="confirm-cancel" class="rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-600 hover:bg-stone-100">Batal</button>
+                <button type="button" id="confirm-accept" class="btn-primary">Ya, lanjutkan</button>
             </div>
         </div>
     </div>
@@ -175,60 +168,41 @@ $role = strtolower((string) ($currentUser['role'] ?? ''));
     <script>
         (function () {
             const modal = document.getElementById('confirm-modal');
-            const messageEl = document.getElementById('confirm-message');
-            const okBtn = document.getElementById('confirm-ok');
-            const cancelBtn = document.getElementById('confirm-cancel');
+            if (!modal) return;
             const backdrop = document.getElementById('confirm-backdrop');
+            const message = document.getElementById('confirm-message');
+            const btnCancel = document.getElementById('confirm-cancel');
+            const btnAccept = document.getElementById('confirm-accept');
             let pendingForm = null;
-
-            function open(message, form) {
-                messageEl.textContent = message;
+            function open(text, form) {
                 pendingForm = form;
+                message.textContent = text || 'Lanjutkan tindakan ini?';
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
+                btnAccept.focus();
             }
-
             function close() {
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
                 pendingForm = null;
             }
-
-            okBtn.addEventListener('click', function () {
-                if (pendingForm) {
-                    pendingForm.submit();
-                }
-                close();
-            });
-
-            cancelBtn.addEventListener('click', close);
+            btnCancel.addEventListener('click', close);
             backdrop.addEventListener('click', close);
-
-            document.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape') {
-                    close();
-                }
+            btnAccept.addEventListener('click', function () {
+                if (pendingForm) { const form = pendingForm; pendingForm = null; close(); form.submit(); } else { close(); }
             });
-
+            document.addEventListener('keydown', function (event) { if (event.key === 'Escape') close(); });
             document.addEventListener('submit', function (event) {
                 const form = event.target;
                 if (!(form instanceof HTMLFormElement)) return;
-                if (form.dataset.confirm) {
-                    event.preventDefault();
-                    open(form.dataset.confirm, form);
-                }
+                if (form.dataset.confirm) { event.preventDefault(); open(form.dataset.confirm, form); }
             });
         })();
-    </script>
 
-    <script>
-        // Pastikan menu sidebar yang aktif terlihat sesuai posisinya saat halaman dibuka.
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.sidebar-nav').forEach(function (nav) {
-                const active = nav.querySelector('a.bg-indigo-600');
-                if (active) {
-                    active.scrollIntoView({ block: 'center' });
-                }
+                const active = nav.querySelector('a[data-active="1"]');
+                if (active) { active.scrollIntoView({ block: 'center' }); }
             });
         });
     </script>

@@ -5,6 +5,23 @@ Semua perubahan penting pada aplikasi SAHABAT-NG akan didokumentasikan di file i
 Format berdasarkan [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 dan proyek ini mengikuti [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-11-18
+
+### Added
+- ✨ **Revamp UI Menyeluruh (Landing + Auth + Panel)**
+  - Design system baru berbasis Tailwind CSS + stylesheet kustom `public/assets/css/app.css` dengan palet emerald/stone, tipografi Plus Jakarta Sans, komponen standar (`.btn-*`, `.card`, `.input`, `.label`, `.badge`, `.empty-state`, `.page-header`), radius/spacing konsisten, dan motion terbatas (150–200ms).
+  - Alias route `auth/login` (GET/POST) dan `auth/logout` untuk kompatibilitas tautan navigasi.
+- 📄 Dokumentasi revamp UI: `docs/PRD-ui-revamp.md`.
+
+### Changed
+- 🎨 Seluruh halaman landing, auth, dan panel (admin/guru/anak/akademik) disesuaikan ke design tokens baru; sidebar memakai scrollbar standar dengan active state emerald, flash & paginasi konsisten.
+- ⚙️ Query Builder pada `Akademik` dan `Guru` disesuaikan dari `select('DISTINCT ...')` ke `distinct()->select(...)` agar kompatibel dengan CI4.
+- 📦 Pembaruan `composer.lock` (mis. `laminas/laminas-escaper` 2.19.0).
+
+### Fixed
+- 🐛 Potensi error Query Builder akibat penggunaan `DISTINCT` di dalam `select()`.
+- 🐛 Tautan login/logout yang tidak terjangkau dari beberapa halaman.
+
 ## [2.0.0] - 2026-11-06
 
 **Rewrite besar**: Aplikasi ditulis ulang dari CodeIgniter 3 (AdminLTE/Bootstrap/jQuery) ke CodeIgniter 4 (Tailwind/Alpine). Lihat item **BREAKING CHANGE** di bagian Changed untuk detail migrasi.

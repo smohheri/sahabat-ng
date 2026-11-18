@@ -10,8 +10,8 @@ $renderMarkdown = static function (string $markdown): string {
     $inline = static function (string $text): string {
         $text = esc($text, 'html');
         $text = preg_replace('/\*\*(.+?)\*\*/s', '<strong>$1</strong>', $text) ?? $text;
-        $text = preg_replace('/`([^`]+)`/s', '<code class="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.85em] text-slate-700">$1</code>', $text) ?? $text;
-        $text = preg_replace('/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/s', '<a href="$2" target="_blank" rel="noopener" class="text-indigo-600 hover:underline">$1</a>', $text) ?? $text;
+        $text = preg_replace('/`([^`]+)`/s', '<code class="rounded bg-stone-100 px-1.5 py-0.5 font-mono text-[0.85em] text-stone-700">$1</code>', $text) ?? $text;
+        $text = preg_replace('/\[(.+?)\]\((https?:\/\/[^\s)]+)\)/s', '<a href="$2" target="_blank" rel="noopener" class="text-emerald-700 hover:underline">$1</a>', $text) ?? $text;
 
         return $text;
     };
@@ -34,7 +34,7 @@ $renderMarkdown = static function (string $markdown): string {
             }
             $level = strlen($m[1]);
             $size  = [1 => 'text-2xl', 2 => 'text-xl', 3 => 'text-lg', 4 => 'text-base'][$level] ?? 'text-base';
-            $html .= '<h' . $level . ' class="' . $size . ' font-extrabold text-slate-900' . ($level > 1 ? ' mt-6' : '') . '">' . $inline($m[2]) . '</h' . $level . '>';
+            $html .= '<h' . $level . ' class="' . $size . ' font-extrabold text-stone-900' . ($level > 1 ? ' mt-6' : '') . '">' . $inline($m[2]) . '</h' . $level . '>';
             continue;
         }
 
@@ -43,7 +43,7 @@ $renderMarkdown = static function (string $markdown): string {
                 $html .= '<ul class="mt-3 space-y-2">';
                 $inList = true;
             }
-            $html .= '<li class="flex items-start gap-2 text-sm text-slate-600"><i class="fa-solid fa-circle text-[5px] mt-2 text-indigo-400"></i><span>' . $inline($m[1]) . '</span></li>';
+            $html .= '<li class="flex items-start gap-2 text-sm text-stone-600"><i class="fa-solid fa-circle text-[5px] mt-2 text-emerald-400"></i><span>' . $inline($m[1]) . '</span></li>';
             continue;
         }
 
@@ -52,7 +52,7 @@ $renderMarkdown = static function (string $markdown): string {
             $inList = false;
         }
 
-        $html .= '<p class="mt-3 text-sm leading-relaxed text-slate-600">' . $inline($trim) . '</p>';
+        $html .= '<p class="mt-3 text-sm leading-relaxed text-stone-600">' . $inline($trim) . '</p>';
     }
 
     if ($inList) {
@@ -64,21 +64,21 @@ $renderMarkdown = static function (string $markdown): string {
 ?>
 
 <div class="space-y-6">
-    <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+    <div class="page-header">
         <div>
-            <h2 class="text-lg font-extrabold text-slate-900">Changelog</h2>
-            <p class="text-sm text-slate-500">Catatan perubahan dan riwayat pengembangan aplikasi.</p>
+            <h2 class="page-title">Changelog</h2>
+            <p class="page-subtitle">Catatan perubahan dan riwayat pengembangan aplikasi.</p>
         </div>
-        <span class="inline-flex items-center gap-2 self-start rounded-xl bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-600">
+        <span class="inline-flex items-center gap-2 self-start rounded-xl bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
             <i class="fa-solid fa-code-branch"></i> SAHABAT-NG
         </span>
     </div>
 
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+    <div class="card p-6 sm:p-8">
         <?php if (trim($changelog) === '' || $changelog === 'Belum ada changelog.'): ?>
             <div class="py-10 text-center">
-                <i class="fa-solid fa-code-branch mb-3 text-3xl text-slate-300"></i>
-                <p class="text-sm text-slate-500">Belum ada changelog yang tersedia.</p>
+                <i class="fa-solid fa-code-branch mb-3 text-3xl text-stone-300"></i>
+                <p class="page-subtitle">Belum ada changelog yang tersedia.</p>
             </div>
         <?php else: ?>
             <div class="changelog-content">

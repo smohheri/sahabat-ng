@@ -9,7 +9,9 @@ $routes->get('lisensi', 'Landing::license');
 $routes->get('donasi', 'Landing::donasi');
 
 $routes->match(['get', 'post'], 'login', 'Auth::login');
+$routes->match(['get', 'post'], 'auth/login', 'Auth::login');
 $routes->get('logout', 'Auth::logout');
+$routes->get('auth/logout', 'Auth::logout');
 
 // ---------------------------------------------------------------------
 // Admin / Petugas / Dinas / Operator

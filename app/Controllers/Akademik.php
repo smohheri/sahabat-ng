@@ -549,7 +549,7 @@ class Akademik extends BaseController
         }
 
         $ids = $this->db->table('rombel_mata_pelajaran')
-            ->select('DISTINCT id_rombel')
+            ->distinct()->select('id_rombel')
             ->whereIn('id_mata_pelajaran', $allowed)
             ->get()->getResultArray();
 

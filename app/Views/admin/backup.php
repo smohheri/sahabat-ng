@@ -16,30 +16,30 @@ $formatSize = static function (int $bytes): string {
 
 <div class="space-y-5" x-data="{ restore: false }">
     <div>
-        <h2 class="text-lg font-extrabold text-slate-900">Backup &amp; Restore</h2>
-        <p class="text-sm text-slate-500">Amankan data aplikasi dan berkas unggahan secara berkala.</p>
+        <h2 class="page-title">Backup &amp; Restore</h2>
+        <p class="page-subtitle">Amankan data aplikasi dan berkas unggahan secara berkala.</p>
     </div>
 
     <div class="grid gap-4 sm:grid-cols-2">
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="card p-5">
             <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-bold text-slate-900">Backup Database</p>
-                    <p class="mt-1 text-xs text-slate-500">Menyimpan seluruh tabel ke file <code class="rounded bg-slate-100 px-1">.sql</code>.</p>
+                    <p class="text-sm font-bold text-stone-900">Backup Database</p>
+                    <p class="mt-1 text-xs text-stone-500">Menyimpan seluruh tabel ke file <code class="rounded bg-stone-100 px-1">.sql</code>.</p>
                 </div>
-                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600"><i class="fa-solid fa-database"></i></span>
+                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-700"><i class="fa-solid fa-database"></i></span>
             </div>
             <form method="post" action="<?= site_url('admin/backup_database') ?>" class="mt-4">
                 <?= csrf_field() ?>
-                <button type="submit" class="w-full rounded-xl bg-indigo-600 px-4 py-2.5 text-xs font-bold text-white transition hover:bg-indigo-700"><i class="fa-solid fa-download mr-1"></i> Buat Backup Database</button>
+                <button type="submit" class="btn-primary w-full justify-center"><i class="fa-solid fa-download mr-1"></i> Buat Backup Database</button>
             </form>
         </div>
 
-        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="card p-5">
             <div class="flex items-start justify-between">
                 <div>
-                    <p class="text-sm font-bold text-slate-900">Backup Berkas Upload</p>
-                    <p class="mt-1 text-xs text-slate-500">Mengemas folder <code class="rounded bg-slate-100 px-1">uploads</code> menjadi ZIP.</p>
+                    <p class="text-sm font-bold text-stone-900">Backup Berkas Upload</p>
+                    <p class="mt-1 text-xs text-stone-500">Mengemas folder <code class="rounded bg-stone-100 px-1">uploads</code> menjadi ZIP.</p>
                 </div>
                 <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><i class="fa-solid fa-file-zipper"></i></span>
             </div>
@@ -65,35 +65,35 @@ $formatSize = static function (int $bytes): string {
         <div x-cloak x-show="restore" x-transition class="mt-4 grid gap-4 border-t border-amber-200 pt-4 md:grid-cols-2">
             <form method="post" action="<?= site_url('admin/restore_database') ?>" enctype="multipart/form-data" class="rounded-xl border border-amber-200 bg-white p-4" data-confirm="Restore database akan menimpa data saat ini. Lanjutkan?">
                 <?= csrf_field() ?>
-                <p class="text-xs font-bold text-slate-700">Restore Database (.sql)</p>
-                <input type="file" name="sql_file" accept=".sql" required class="mt-2 block w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-600 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white">
+                <p class="text-xs font-bold text-stone-700">Restore Database (.sql)</p>
+                <input type="file" name="sql_file" accept=".sql" required class="mt-2 block w-full text-xs text-stone-500 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-600 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white">
                 <button type="submit" class="mt-3 w-full rounded-lg bg-amber-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-amber-700">Restore Database</button>
             </form>
 
             <form method="post" action="<?= site_url('admin/restore_files') ?>" enctype="multipart/form-data" class="rounded-xl border border-amber-200 bg-white p-4" data-confirm="Restore berkas akan menimpa file upload saat ini. Lanjutkan?">
                 <?= csrf_field() ?>
-                <p class="text-xs font-bold text-slate-700">Restore Berkas (.zip)</p>
-                <input type="file" name="zip_file" accept=".zip" required class="mt-2 block w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-600 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white">
+                <p class="text-xs font-bold text-stone-700">Restore Berkas (.zip)</p>
+                <input type="file" name="zip_file" accept=".zip" required class="mt-2 block w-full text-xs text-stone-500 file:mr-3 file:rounded-lg file:border-0 file:bg-amber-600 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white">
                 <button type="submit" class="mt-3 w-full rounded-lg bg-amber-600 px-3 py-2 text-xs font-bold text-white transition hover:bg-amber-700">Restore Berkas</button>
             </form>
         </div>
     </div>
 
-    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-            <h3 class="text-sm font-bold text-slate-900">Riwayat Backup</h3>
-            <span class="rounded-lg bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600"><?= number_format((int) ($total ?? count($files)), 0, ',', '.') ?> file</span>
+    <div class="card overflow-hidden">
+        <div class="card-header flex items-center justify-between">
+            <h3 class="section-title">Riwayat Backup</h3>
+            <span class="rounded-lg bg-stone-100 px-2.5 py-1 text-xs font-semibold text-stone-600"><?= number_format((int) ($total ?? count($files)), 0, ',', '.') ?> file</span>
         </div>
 
         <?php if ($files === []): ?>
             <div class="px-5 py-12 text-center">
-                <i class="fa-solid fa-box-archive mb-3 text-3xl text-slate-300"></i>
-                <p class="text-sm text-slate-500">Belum ada file backup.</p>
+                <i class="fa-solid fa-box-archive mb-3 text-3xl text-stone-300"></i>
+                <p class="page-subtitle">Belum ada file backup.</p>
             </div>
         <?php else: ?>
             <div class="overflow-x-auto">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500">
+                <table class="table">
+                    <thead>
                         <tr>
                             <th class="px-4 py-3 font-semibold">Nama File</th>
                             <th class="px-4 py-3 font-semibold">Tipe</th>
@@ -102,31 +102,31 @@ $formatSize = static function (int $bytes): string {
                             <th class="px-4 py-3 text-right font-semibold">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-stone-100">
                         <?php foreach ($files as $file): ?>
-                            <tr class="transition hover:bg-slate-50/70">
+                            <tr class="transition hover:bg-stone-50/70">
                                 <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fa-solid <?= $file['type'] === 'files' ? 'fa-file-zipper text-emerald-500' : 'fa-database text-indigo-500' ?>"></i>
-                                        <span class="font-mono text-xs text-slate-700"><?= esc($file['name']) ?></span>
+                                    <div class="page-actions">
+                                        <i class="fa-solid <?= $file['type'] === 'files' ? 'fa-file-zipper text-emerald-500' : 'fa-database text-emerald-600' ?>"></i>
+                                        <span class="font-mono text-xs text-stone-700"><?= esc($file['name']) ?></span>
                                     </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <span class="inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold <?= $file['type'] === 'files' ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700' ?>">
+                                    <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold <?= $file['type'] === 'files' ? 'bg-emerald-100 text-emerald-700' : 'bg-emerald-100 text-emerald-700' ?>">
                                         <?= $file['type'] === 'files' ? 'Berkas' : 'Database' ?>
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-slate-600"><?= $formatSize((int) $file['size']) ?></td>
-                                <td class="px-4 py-3 text-[11px] text-slate-500"><?= tanggal_id(date('Y-m-d H:i:s', (int) $file['modified']), true) ?></td>
+                                <td class="px-4 py-3 text-stone-600"><?= $formatSize((int) $file['size']) ?></td>
+                                <td class="px-4 py-3 text-xs text-stone-500"><?= tanggal_id(date('Y-m-d H:i:s', (int) $file['modified']), true) ?></td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center justify-end gap-1">
-                                        <a href="<?= site_url('admin/download_backup/' . $file['type'] . '/' . $file['name']) ?>" class="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-600" title="Unduh">
+                                        <a href="<?= site_url('admin/download_backup/' . $file['type'] . '/' . $file['name']) ?>" class="btn-icon" title="Unduh">
                                             <i class="fa-solid fa-download text-xs"></i>
                                         </a>
                                         <form method="post" action="<?= site_url('admin/delete_backup') ?>" data-confirm="Hapus file backup <?= esc($file['name'], 'attr') ?>?">
                                             <?= csrf_field() ?>
                                             <input type="hidden" name="filename" value="<?= esc($file['name']) ?>">
-                                            <button type="submit" class="rounded-lg border border-slate-200 p-2 text-slate-500 transition hover:bg-rose-50 hover:text-rose-600" title="Hapus">
+                                            <button type="submit" class="btn-icon btn-icon-danger" title="Hapus">
                                                 <i class="fa-solid fa-trash text-xs"></i>
                                             </button>
                                         </form>

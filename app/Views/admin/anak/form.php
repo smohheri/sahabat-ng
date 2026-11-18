@@ -5,8 +5,8 @@ $value    = static fn (string $key, mixed $default = '') => old($key, $anak[$key
 $selected = static fn (string $key, mixed $val): string => (string) old($key, $anak[$key] ?? '') === (string) $val ? 'selected' : '';
 $checked  = static fn (string $key, mixed $val, bool $default = false): string => ((string) old($key, $anak[$key] ?? ($default ? '1' : '0')) === (string) $val) ? 'checked' : '';
 
-$inputClass = 'w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20';
-$labelClass = 'mb-1 block text-[11px] font-semibold uppercase tracking-wider text-slate-400';
+$inputClass = 'input';
+$labelClass = 'label';
 
 $provinsiOptions = array_map(static fn ($row) => [
     'value' => (int) $row['id_provinsi'],
@@ -30,20 +30,20 @@ $regionConfig = json_encode([
 <form method="post" action="<?= $action ?>" enctype="multipart/form-data" class="space-y-5">
     <?= csrf_field() ?>
 
-    <div class="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+    <div class="page-header">
         <div>
-            <h2 class="text-lg font-extrabold text-slate-900"><?= $isEdit ? 'Edit Data Anak' : 'Tambah Data Anak' ?></h2>
-            <p class="text-sm text-slate-500">Lengkapi data identitas, orang tua, pendidikan, dan berkas pendukung.</p>
+            <h2 class="page-title"><?= $isEdit ? 'Edit Data Anak' : 'Tambah Data Anak' ?></h2>
+            <p class="page-subtitle">Lengkapi data identitas, orang tua, pendidikan, dan berkas pendukung.</p>
         </div>
-        <a href="<?= site_url('admin/anak_aktif') ?>" class="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50">
+        <a href="<?= site_url('admin/anak_aktif') ?>" class="btn-secondary">
             <i class="fa-solid fa-arrow-left"></i> Kembali
         </a>
     </div>
 
     <!-- Identitas -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-100 px-5 py-4">
-            <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900"><i class="fa-solid fa-id-card text-indigo-500"></i> Identitas Anak</h3>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="section-title"><i class="fa-solid fa-id-card text-emerald-600"></i> Identitas Anak</h3>
         </div>
         <div class="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
             <div>
@@ -106,9 +106,9 @@ $regionConfig = json_encode([
     </div>
 
     <!-- Status & Wilayah -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-100 px-5 py-4">
-            <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900"><i class="fa-solid fa-location-dot text-indigo-500"></i> Status &amp; Wilayah</h3>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="section-title"><i class="fa-solid fa-location-dot text-emerald-600"></i> Status &amp; Wilayah</h3>
         </div>
         <div class="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
             <div>
@@ -147,16 +147,16 @@ $regionConfig = json_encode([
                     <input type="hidden" name="id_provinsi" :value="provinsiId">
                     <div class="relative" @click.outside="provinsiOpen = false">
                         <input type="text" :value="provinsiOpen ? provinsiSearch : provinsiLabel" @focus="provinsiOpen = true; provinsiSearch = ''" @input="provinsiSearch = $event.target.value" placeholder="Cari provinsi..." class="<?= $inputClass ?> pr-9">
-                        <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+                        <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-stone-400"><i class="fa-solid fa-chevron-down text-xs"></i></span>
 
-                        <div x-show="provinsiOpen" x-cloak class="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+                        <div x-show="provinsiOpen" x-cloak class="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-stone-200 bg-white shadow-lg">
                             <template x-for="p in filteredProvinsi" :key="p.value">
-                                <button type="button" @click="selectProvinsi(p)" class="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-indigo-50">
+                                <button type="button" @click="selectProvinsi(p)" class="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-emerald-50">
                                     <span x-text="p.label"></span>
-                                    <i x-show="String(p.value) === String(provinsiId)" class="fa-solid fa-check text-xs text-indigo-600"></i>
+                                    <i x-show="String(p.value) === String(provinsiId)" class="fa-solid fa-check text-xs text-emerald-700"></i>
                                 </button>
                             </template>
-                            <p x-show="filteredProvinsi.length === 0" class="px-3 py-3 text-center text-xs text-slate-400">Tidak ditemukan</p>
+                            <p x-show="filteredProvinsi.length === 0" class="px-3 py-3 text-center text-xs text-stone-400">Tidak ditemukan</p>
                         </div>
                     </div>
                 </div>
@@ -166,23 +166,23 @@ $regionConfig = json_encode([
                     <input type="hidden" name="id_kabupaten" :value="kabupatenId">
                     <div class="relative" @click.outside="kabupatenOpen = false">
                         <input type="text" :value="kabupatenOpen ? kabupatenSearch : kabupatenLabel" @focus="kabupatenOpen = true; kabupatenSearch = ''" @input="kabupatenSearch = $event.target.value" placeholder="Cari kabupaten/kota..." class="<?= $inputClass ?> pr-9">
-                        <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400"><i class="fa-solid fa-chevron-down text-xs"></i></span>
+                        <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-stone-400"><i class="fa-solid fa-chevron-down text-xs"></i></span>
 
-                        <div x-show="kabupatenOpen" x-cloak class="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+                        <div x-show="kabupatenOpen" x-cloak class="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-stone-200 bg-white shadow-lg">
                             <template x-for="k in filteredKabupaten" :key="k.value">
-                                <button type="button" @click="selectKabupaten(k)" class="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-slate-700 transition hover:bg-indigo-50">
+                                <button type="button" @click="selectKabupaten(k)" class="flex w-full items-center justify-between px-3 py-2 text-left text-sm text-stone-700 transition hover:bg-emerald-50">
                                     <span x-text="k.label"></span>
-                                    <i x-show="String(k.value) === String(kabupatenId)" class="fa-solid fa-check text-xs text-indigo-600"></i>
+                                    <i x-show="String(k.value) === String(kabupatenId)" class="fa-solid fa-check text-xs text-emerald-700"></i>
                                 </button>
                             </template>
-                            <p x-show="filteredKabupaten.length === 0" class="px-3 py-3 text-center text-xs text-slate-400">Tidak ditemukan</p>
+                            <p x-show="filteredKabupaten.length === 0" class="px-3 py-3 text-center text-xs text-stone-400">Tidak ditemukan</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="grid gap-4 border-t border-slate-100 p-5 md:grid-cols-2">
+        <div class="grid gap-4 border-t border-stone-100 p-5 md:grid-cols-2">
             <div>
                 <label class="<?= $labelClass ?>">Alamat Orang Tua</label>
                 <textarea name="alamat_orang_tua" rows="2" class="<?= $inputClass ?>"><?= esc($value('alamat_orang_tua')) ?></textarea>
@@ -195,9 +195,9 @@ $regionConfig = json_encode([
     </div>
 
     <!-- Orang tua & wali -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-100 px-5 py-4">
-            <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900"><i class="fa-solid fa-people-roof text-indigo-500"></i> Orang Tua &amp; Wali</h3>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="section-title"><i class="fa-solid fa-people-roof text-emerald-600"></i> Orang Tua &amp; Wali</h3>
         </div>
         <div class="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-4">
             <div>
@@ -240,9 +240,9 @@ $regionConfig = json_encode([
     </div>
 
     <!-- Pendidikan -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-100 px-5 py-4">
-            <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900"><i class="fa-solid fa-graduation-cap text-indigo-500"></i> Pendidikan</h3>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="section-title"><i class="fa-solid fa-graduation-cap text-emerald-600"></i> Pendidikan</h3>
         </div>
         <div class="grid gap-4 p-5 md:grid-cols-2 xl:grid-cols-3">
             <div>
@@ -269,7 +269,7 @@ $regionConfig = json_encode([
             <div>
                 <label class="<?= $labelClass ?>">Biaya SPP</label>
                 <div class="relative">
-                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-slate-400">Rp</span>
+                    <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-semibold text-stone-400">Rp</span>
                     <input type="number" step="0.01" min="0" name="biaya_spp" value="<?= esc($value('biaya_spp')) ?>" class="<?= $inputClass ?> pl-9">
                 </div>
             </div>
@@ -281,9 +281,9 @@ $regionConfig = json_encode([
     </div>
 
     <!-- Berkas -->
-    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div class="border-b border-slate-100 px-5 py-4">
-            <h3 class="flex items-center gap-2 text-sm font-bold text-slate-900"><i class="fa-solid fa-folder-open text-indigo-500"></i> Berkas Pendukung</h3>
+    <div class="card">
+        <div class="card-header">
+            <h3 class="section-title"><i class="fa-solid fa-folder-open text-emerald-600"></i> Berkas Pendukung</h3>
         </div>
         <div class="grid gap-5 p-5 md:grid-cols-2 xl:grid-cols-4">
             <?php
@@ -295,32 +295,32 @@ $regionConfig = json_encode([
             ];
             ?>
             <?php foreach ($berkas as $item): ?>
-                <div class="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-4">
-                    <p class="text-xs font-bold text-slate-700"><?= esc($item['label']) ?></p>
+                <div class="rounded-xl border border-dashed border-stone-200 bg-stone-50 p-4">
+                    <p class="text-xs font-bold text-stone-700"><?= esc($item['label']) ?></p>
                     <?php if (! empty($item['current'])): ?>
                         <?php if ($item['jenis'] === 'foto'): ?>
                             <a href="<?= site_url('admin/anak/view_dokumen/' . $anak['id_anak'] . '/foto') ?>" target="_blank" class="mt-2 flex items-center gap-3">
-                                <img src="<?= upload_url('foto_anak', $item['current']) ?>" alt="<?= esc($anak['nama_anak'] ?? '') ?>" class="h-20 w-20 rounded-xl object-cover ring-1 ring-slate-200">
-                                <span class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-700"><i class="fa-solid fa-up-right-from-square mr-1"></i>Lihat foto</span>
+                                <img src="<?= upload_url('foto_anak', $item['current']) ?>" alt="<?= esc($anak['nama_anak'] ?? '') ?>" class="h-20 w-20 rounded-xl object-cover ring-1 ring-stone-200">
+                                <span class="text-xs font-semibold text-emerald-700 hover:text-emerald-800"><i class="fa-solid fa-up-right-from-square mr-1"></i>Lihat foto</span>
                             </a>
                         <?php else: ?>
-                            <a href="<?= site_url('admin/anak/view_dokumen/' . $anak['id_anak'] . '/' . $item['jenis']) ?>" target="_blank" class="mt-2 inline-flex items-center gap-1.5 text-[11px] font-semibold text-indigo-600 hover:text-indigo-700">
+                            <a href="<?= site_url('admin/anak/view_dokumen/' . $anak['id_anak'] . '/' . $item['jenis']) ?>" target="_blank" class="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800">
                                 <i class="fa-solid fa-paperclip"></i> Lihat berkas saat ini
                             </a>
                         <?php endif; ?>
                     <?php else: ?>
-                        <p class="mt-2 text-[11px] text-slate-400">Belum ada berkas.</p>
+                        <p class="mt-2 text-xs text-stone-400">Belum ada berkas.</p>
                     <?php endif; ?>
-                    <input type="file" name="<?= $item['name'] ?>" accept="<?= $item['accept'] ?>" class="mt-3 block w-full text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-indigo-600 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-indigo-700">
-                    <p class="mt-1 text-[10px] text-slate-400">Maks. 2 MB (JPG, PNG, WEBP, PDF).</p>
+                    <input type="file" name="<?= $item['name'] ?>" accept="<?= $item['accept'] ?>" class="mt-3 block w-full text-xs text-stone-500 file:mr-3 file:rounded-lg file:border-0 file:bg-emerald-700 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-emerald-800">
+                    <p class="mt-1 text-[10px] text-stone-400">Maks. 2 MB (JPG, PNG, WEBP, PDF).</p>
                 </div>
             <?php endforeach; ?>
         </div>
     </div>
 
     <div class="flex flex-col-reverse justify-end gap-3 sm:flex-row">
-        <a href="<?= site_url('admin/anak_aktif') ?>" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Batal</a>
-        <button type="submit" class="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/20 transition hover:bg-indigo-700">
+        <a href="<?= site_url('admin/anak_aktif') ?>" class="btn-secondary">Batal</a>
+        <button type="submit" class="btn-primary">
             <i class="fa-solid fa-floppy-disk"></i> <?= $isEdit ? 'Simpan Perubahan' : 'Simpan Data' ?>
         </button>
     </div>

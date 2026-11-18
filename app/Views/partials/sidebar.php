@@ -1,114 +1,103 @@
 <?php
-$role          = strtolower((string) ($currentUser['role'] ?? ''));
-$isTeacher     = in_array($role, ['guru', 'pengajar'], true);
-$isChild       = $role === 'anak';
-$isStrictAdmin = $role === 'admin';
-$path          = trim(service('request')->getPath(), '/');
+$role           = strtolower((string) ($currentUser['role'] ?? ''));
+$isTeacher      = in_array($role, ['guru', 'pengajar'], true);
+$isChild        = $role === 'anak';
+$isStrictAdmin  = $role === 'admin';
+$path           = trim(service('request')->getPath(), '/');
 $dataAnakActive = in_array($path, ['admin/anak_aktif', 'admin/anak_nonaktif', 'admin/anak'], true)
     || str_starts_with($path, 'admin/anak/');
 
-$itemClass = static function (string $target, bool $exact = false) use ($path): string {
+$isActive = static function (string $target, bool $exact = false) use ($path): bool {
     $target = trim($target, '/');
-    $active = $exact
+    return $exact
         ? ($path === $target)
         : (($path === $target) || str_starts_with($path, $target . '/'));
+};
 
+$itemClass = static function (string $target, bool $exact = false) use ($isActive): string {
+    $active = $isActive($target, $exact);
     return $active
-        ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950/30'
-        : 'text-slate-300 hover:bg-slate-800/70 hover:text-white';
+        ? 'bg-emerald-600 text-white'
+        : 'text-stone-300 hover:bg-stone-800 hover:text-white';
+};
+
+$dataAttr = static function (string $target, bool $exact = false) use ($isActive): string {
+    return $isActive($target, $exact) ? ' data-active="1"' : '';
 };
 
 $icon = static fn (string $name): string => '<i class="fa-solid fa-' . $name . ' w-5 text-center text-[13px]"></i>';
+$section = 'mb-2 mt-5 px-3 text-xs font-semibold text-stone-400';
 ?>
 
-<aside class="flex h-full w-72 shrink-0 flex-col border-r border-slate-800 bg-slate-900">
-    <div class="flex h-16 items-center gap-3 border-b border-slate-800 px-5">
-        <?php $logo = $settings['logo'] ?? null; ?>
-        <?php if (! empty($logo)): ?>
-            <img src="<?= upload_url('logos', $logo) ?>" alt="Logo" class="h-9 w-9 rounded-lg object-cover ring-1 ring-slate-700">
-        <?php else: ?>
-            <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">SA</div>
-        <?php endif; ?>
+<aside class="flex h-full w-72 shrink-0 flex-col border-r border-stone-800 bg-stone-900">
+    <div class="flex items-center gap-3 border-b border-stone-800 px-5 py-5">
+        <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600 text-lg font-extrabold text-white">
+            <i class="fa-solid fa-hands-holding-child"></i>
+        </div>
         <div class="min-w-0">
-            <p class="truncate text-sm font-semibold text-white"><?= esc($settings['nama_lksa'] ?? 'SAHABAT-NG') ?></p>
-            <p class="text-[11px] uppercase tracking-wider text-slate-400">Sistem Informasi</p>
+            <p class="truncate text-sm font-extrabold text-white"><?= esc($settings['nama_lksa'] ?? 'SAHABAT-NG') ?></p>
+            <p class="truncate text-xs text-stone-400">Panel <?= $isTeacher ? 'Guru' : ($isChild ? 'Anak' : 'Admin') ?></p>
         </div>
     </div>
 
-    <nav class="sidebar-nav flex-1 space-y-1 overflow-y-auto scrollbar-hidden px-3 py-4 text-sm">
+    <nav class="sidebar-nav flex-1 space-y-1 overflow-y-auto px-3 py-4 text-sm">
+        <p class="<?= $section ?> mt-0">Dashboard</p>
+
         <?php if ($isChild): ?>
-            <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Panel Anak</p>
-            <a href="<?= site_url('anak') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('anak', true) ?>"><?= $icon('house') ?> Dashboard</a>
-            <a href="<?= site_url('anak/asesmen-mandiri') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('anak/asesmen-mandiri') ?>"><?= $icon('clipboard-check') ?> Asesmen Mandiri</a>
-            <a href="<?= site_url('anak/profil') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('anak/profil') ?>"><?= $icon('user') ?> Profil Saya</a>
+            <a href="<?= site_url('anak') ?>"<?= $dataAttr('anak', true) ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('anak', true) ?>"><?= $icon('house') ?> Dashboard</a>
+            <a href="<?= site_url('anak') ?>"<?= $dataAttr('anak/penilaian') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('anak/penilaian') ?>"><?= $icon('star') ?> Penilaian Saya</a>
+            <a href="<?= site_url('anak/asesmen-mandiri') ?>"<?= $dataAttr('anak/asesmen-mandiri') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('anak/asesmen-mandiri') ?>"><?= $icon('clipboard-check') ?> Asesmen Mandiri</a>
+            <a href="<?= site_url('anak/profil') ?>"<?= $dataAttr('anak/profil') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('anak/profil') ?>"><?= $icon('id-card') ?> Profil Saya</a>
+
         <?php elseif ($isTeacher): ?>
-            <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Panel Pengajar</p>
-            <a href="<?= site_url('guru') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru', true) ?>"><?= $icon('house') ?> Dashboard</a>
-            <a href="<?= site_url('guru/anak') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/anak') ?>"><?= $icon('children') ?> Data Anak</a>
-            <a href="<?= site_url('guru/penilaian-karakter') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/penilaian-karakter') ?>"><?= $icon('star') ?> Penilaian Karakter</a>
-            <a href="<?= site_url('guru/perkembangan-anak') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/perkembangan-anak') ?>"><?= $icon('chart-line') ?> Perkembangan Anak</a>
+            <a href="<?= site_url('guru') ?>"<?= $dataAttr('guru', true) ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru', true) ?>"><?= $icon('house') ?> Dashboard</a>
+            <a href="<?= site_url('guru/profil-pengajar') ?>"<?= $dataAttr('guru/profil-pengajar') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/profil-pengajar') ?>"><?= $icon('id-card') ?> Profil Pengajar</a>
+            <a href="<?= site_url('guru/anak') ?>"<?= $dataAttr('guru/anak') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/anak') ?>"><?= $icon('children') ?> Data Anak</a>
+            <a href="<?= site_url('guru/penilaian-karakter') ?>"<?= $dataAttr('guru/penilaian-karakter') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/penilaian-karakter') ?>"><?= $icon('clipboard-check') ?> Penilaian Karakter</a>
+            <a href="<?= site_url('guru/perkembangan-anak') ?>"<?= $dataAttr('guru/perkembangan-anak') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/perkembangan-anak') ?>"><?= $icon('chart-line') ?> Perkembangan</a>
 
-            <p class="px-2 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Akademik</p>
-            <a href="<?= site_url('guru/akademik/absensi') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/akademik/absensi') ?>"><?= $icon('calendar-check') ?> Absensi Mapel</a>
-            <a href="<?= site_url('guru/akademik/mapel') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/akademik/mapel') ?>"><?= $icon('book') ?> Mata Pelajaran</a>
-            <a href="<?= site_url('guru/akademik/rombel') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/akademik/rombel') ?>"><?= $icon('users-rectangle') ?> Rombongan Belajar</a>
+            <p class="<?= $section ?>">Akademik</p>
+            <a href="<?= site_url('guru/akademik/mapel') ?>"<?= $dataAttr('guru/akademik/mapel') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/akademik/mapel') ?>"><?= $icon('book') ?> Mata Pelajaran</a>
+            <a href="<?= site_url('guru/akademik/rombel') ?>"<?= $dataAttr('guru/akademik/rombel') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/akademik/rombel') ?>"><?= $icon('users-rectangle') ?> Rombel</a>
+            <a href="<?= site_url('guru/akademik/absensi') ?>"<?= $dataAttr('guru/akademik/absensi') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/akademik/absensi') ?>"><?= $icon('calendar-check') ?> Absensi</a>
 
-            <p class="px-2 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Akun</p>
-            <a href="<?= site_url('guru/profil-pengajar') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('guru/profil-pengajar') ?>"><?= $icon('id-card') ?> Profil Pengajar</a>
         <?php else: ?>
-            <p class="px-2 pb-2 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Utama</p>
-            <a href="<?= site_url('admin') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin', true) ?>"><?= $icon('chart-pie') ?> Dashboard</a>
+            <a href="<?= site_url('admin') ?>"<?= $dataAttr('admin', true) ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin', true) ?>"><?= $icon('house') ?> Dashboard</a>
 
-            <p class="px-2 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Data Master</p>
-            <div x-data="{ open: true }">
-                <button type="button" @click="open = !open" class="flex w-full items-center justify-between rounded-xl px-3 py-2.5 font-medium transition <?= $dataAnakActive ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-950/30' : 'text-slate-300 hover:bg-slate-800/70 hover:text-white' ?>">
-                    <span class="flex items-center gap-3"><?= $icon('children') ?> Data Anak</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] transition-transform" :class="open ? '' : '-rotate-90'"></i>
-                </button>
-                <div x-show="open" class="mt-1 space-y-1 border-l border-slate-700/60 pl-3 ml-3">
-                    <a href="<?= site_url('admin/anak_aktif') ?>" class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition <?= $itemClass('admin/anak_aktif') ?>"><?= $icon('child-reaching') ?> Anak Aktif</a>
-                    <a href="<?= site_url('admin/anak_nonaktif') ?>" class="flex items-center gap-3 rounded-lg px-3 py-2 text-[13px] font-medium transition <?= $itemClass('admin/anak_nonaktif') ?>"><?= $icon('user-slash') ?> Anak Nonaktif</a>
-                </div>
-            </div>
-            <a href="<?= site_url('admin/pengurus') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/pengurus') ?>"><?= $icon('user-tie') ?> Pengurus</a>
+            <p class="<?= $section ?>">Data</p>
+            <a href="<?= site_url('admin/pengurus') ?>"<?= $dataAttr('admin/pengurus') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/pengurus') ?>"><?= $icon('user-tie') ?> Pengurus</a>
+            <a href="<?= site_url('admin/anak') ?>"<?= $dataAnakActive ? ' data-active="1"' : '' ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $dataAnakActive ? 'bg-emerald-600 text-white' : 'text-stone-300 hover:bg-stone-800 hover:text-white' ?>"><?= $icon('children') ?> Anak Asuh</a>
+
+            <p class="<?= $section ?>">Akademik</p>
+            <a href="<?= site_url('admin/akademik/mapel') ?>"<?= $dataAttr('admin/akademik/mapel') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/akademik/mapel') ?>"><?= $icon('book') ?> Mata Pelajaran</a>
+            <a href="<?= site_url('admin/akademik/rombel') ?>"<?= $dataAttr('admin/akademik/rombel') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/akademik/rombel') ?>"><?= $icon('users-rectangle') ?> Rombel</a>
+            <a href="<?= site_url('admin/akademik/absensi') ?>"<?= $dataAttr('admin/akademik/absensi') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/akademik/absensi') ?>"><?= $icon('calendar-check') ?> Absensi</a>
+
+            <p class="<?= $section ?>">Penilaian</p>
+            <a href="<?= site_url('admin/penilaian-karakter/data-penilaian') ?>"<?= $dataAttr('admin/penilaian-karakter/data-penilaian') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/data-penilaian') ?>"><?= $icon('clipboard-check') ?> Data Penilaian</a>
+            <a href="<?= site_url('admin/penilaian-karakter/master') ?>"<?= $dataAttr('admin/penilaian-karakter/master') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/master') ?>"><?= $icon('layer-group') ?> Aspek & Indikator</a>
+            <a href="<?= site_url('admin/penilaian-karakter/ringkasan-bulanan') ?>"<?= $dataAttr('admin/penilaian-karakter/ringkasan-bulanan') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/ringkasan-bulanan') ?>"><?= $icon('chart-column') ?> Ringkasan</a>
+            <a href="<?= site_url('admin/penilaian-karakter/ringkasan-mingguan') ?>"<?= $dataAttr('admin/penilaian-karakter/ringkasan-mingguan') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/ringkasan-mingguan') ?>"><?= $icon('calendar-week') ?> Ringkasan Mingguan</a>
+            <a href="<?= site_url('admin/penilaian-karakter/catatan-kualitatif') ?>"<?= $dataAttr('admin/penilaian-karakter/catatan-kualitatif') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/catatan-kualitatif') ?>"><?= $icon('note-sticky') ?> Catatan</a>
+            <a href="<?= site_url('admin/laporan') ?>"<?= $dataAttr('admin/laporan') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/laporan') ?>"><?= $icon('file-lines') ?> Laporan</a>
+
+            <p class="<?= $section ?>">Pengaturan</p>
+            <a href="<?= site_url('admin/user') ?>"<?= $dataAttr('admin/user') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/user') ?>"><?= $icon('users-gear') ?> Pengguna</a>
+            <a href="<?= site_url('admin/hero') ?>"<?= $dataAttr('admin/hero') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/hero') ?>"><?= $icon('image') ?> Hero</a>
+            <a href="<?= site_url('admin/facilities') ?>"<?= $dataAttr('admin/facilities') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/facilities') ?>"><?= $icon('building') ?> Fasilitas</a>
+            <a href="<?= site_url('admin/carousel') ?>"<?= $dataAttr('admin/carousel') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/carousel') ?>"><?= $icon('images') ?> Carousel</a>
             <?php if ($isStrictAdmin): ?>
-                <a href="<?= site_url('admin/user') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/user') ?>"><?= $icon('users-gear') ?> Manajemen User</a>
+                <a href="<?= site_url('admin/pengaturan') ?>"<?= $dataAttr('admin/pengaturan') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/pengaturan') ?>"><?= $icon('gear') ?> Pengaturan</a>
+                <a href="<?= site_url('admin/backup') ?>"<?= $dataAttr('admin/backup') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/backup') ?>"><?= $icon('database') ?> Backup</a>
+                <a href="<?= site_url('admin/logs') ?>"<?= $dataAttr('admin/logs') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/logs') ?>"><?= $icon('clock-rotate-left') ?> Log Aktivitas</a>
             <?php endif; ?>
-
-            <p class="px-2 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Akademik</p>
-            <a href="<?= site_url('admin/akademik/mapel') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/akademik/mapel') ?>"><?= $icon('book') ?> Mata Pelajaran</a>
-            <a href="<?= site_url('admin/akademik/rombel') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/akademik/rombel') ?>"><?= $icon('users-rectangle') ?> Rombongan Belajar</a>
-            <a href="<?= site_url('admin/akademik/absensi') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/akademik/absensi') ?>"><?= $icon('calendar-check') ?> Absensi Mapel</a>
-
-            <p class="px-2 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Penilaian Karakter</p>
-            <a href="<?= site_url('admin/penilaian-karakter/master') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/master') ?>"><?= $icon('sliders') ?> Master Penilaian</a>
-            <a href="<?= site_url('admin/penilaian-karakter/data-penilaian') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/data-penilaian') ?>"><?= $icon('clipboard-list') ?> Data Penilaian</a>
-            <a href="<?= site_url('admin/penilaian-karakter/catatan-kualitatif') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/catatan-kualitatif') ?>"><?= $icon('comment-dots') ?> Catatan Kualitatif</a>
-            <a href="<?= site_url('admin/penilaian-karakter/ringkasan-mingguan') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/ringkasan-mingguan') ?>"><?= $icon('calendar-week') ?> Ringkasan Mingguan</a>
-            <a href="<?= site_url('admin/penilaian-karakter/ringkasan-bulanan') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/ringkasan-bulanan') ?>"><?= $icon('calendar-days') ?> Ringkasan Bulanan</a>
-            <a href="<?= site_url('admin/penilaian-karakter/laporan') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/penilaian-karakter/laporan') ?>"><?= $icon('chart-column') ?> Laporan Karakter</a>
-
-            <p class="px-2 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Laporan &amp; Konten</p>
-            <a href="<?= site_url('admin/laporan') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/laporan') ?>"><?= $icon('file-lines') ?> Laporan</a>
-            <a href="<?= site_url('admin/carousel') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/carousel') ?>"><?= $icon('images') ?> Carousel</a>
-            <a href="<?= site_url('admin/hero') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/hero') ?>"><?= $icon('panorama') ?> Hero</a>
-            <a href="<?= site_url('admin/facilities') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/facilities') ?>"><?= $icon('building') ?> Fasilitas</a>
-            <?php if ($isStrictAdmin): ?>
-                <a href="<?= site_url('admin/pengaturan') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/pengaturan') ?>"><?= $icon('gear') ?> Pengaturan</a>
-            <?php endif; ?>
-
-            <p class="px-2 pb-2 pt-4 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Sistem</p>
-            <a href="<?= site_url('admin/logs') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/logs') ?>"><?= $icon('clock-rotate-left') ?> Log Aktivitas</a>
-            <?php if ($isStrictAdmin): ?>
-                <a href="<?= site_url('admin/backup') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/backup') ?>"><?= $icon('database') ?> Backup &amp; Restore</a>
-            <?php endif; ?>
-            <a href="<?= site_url('admin/dukung_kami') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/dukung_kami') ?>"><?= $icon('hand-holding-heart') ?> Dukung Kami</a>
-            <a href="<?= site_url('admin/kontak') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/kontak') ?>"><?= $icon('address-book') ?> Kontak</a>
-            <a href="<?= site_url('admin/changelog') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/changelog') ?>"><?= $icon('code-branch') ?> Changelog</a>
+            <a href="<?= site_url('admin/dukung_kami') ?>"<?= $dataAttr('admin/dukung_kami') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/dukung_kami') ?>"><?= $icon('hand-holding-heart') ?> Dukung Kami</a>
+            <a href="<?= site_url('admin/kontak') ?>"<?= $dataAttr('admin/kontak') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/kontak') ?>"><?= $icon('address-book') ?> Kontak</a>
+            <a href="<?= site_url('admin/changelog') ?>"<?= $dataAttr('admin/changelog') ?> class="flex items-center gap-3 rounded-xl px-3 py-2.5 font-medium transition <?= $itemClass('admin/changelog') ?>"><?= $icon('code-branch') ?> Changelog</a>
         <?php endif; ?>
     </nav>
 
-    <div class="border-t border-slate-800 p-3">
+    <div class="border-t border-stone-800 p-3">
         <a href="<?= site_url('logout') ?>" class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-rose-300 transition hover:bg-rose-500/10 hover:text-rose-200">
             <?= $icon('right-from-bracket') ?> Keluar
         </a>

@@ -7,130 +7,120 @@ $logo = $settings['logo'] ?? null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?= csrf_hash() ?>">
-    <title><?= esc($title ?? 'Login') ?></title>
+    <title>Masuk · SAHABAT-NG</title>
     <link rel="icon" href="<?= favicon_url() ?>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'ui-sans-serif', 'system-ui', 'sans-serif'] } } },
-        };
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans','ui-sans-serif','system-ui','sans-serif'] } } } }
     </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+    <style>[x-cloak]{display:none !important}</style>
 </head>
-<body class="h-full bg-slate-950 font-sans antialiased">
-    <div class="grid min-h-full lg:grid-cols-2">
-        <div class="relative hidden overflow-hidden bg-slate-900 lg:block">
-            <div class="absolute inset-0 bg-indigo-600/20"></div>
-            <div class="absolute -left-24 top-1/3 h-72 w-72 rounded-full bg-indigo-600/30 blur-3xl"></div>
-            <div class="absolute -bottom-24 right-0 h-80 w-80 rounded-full bg-sky-500/20 blur-3xl"></div>
-
-            <div class="relative flex h-full flex-col justify-between p-12 xl:p-16">
-                <a href="<?= site_url('/') ?>" class="flex items-center gap-3">
-                    <?php if (! empty($logo)): ?>
-                        <img src="<?= upload_url('logos', $logo) ?>" alt="Logo" class="h-12 w-12 rounded-xl object-cover ring-1 ring-white/20">
-                    <?php else: ?>
-                        <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-sm font-bold text-white ring-1 ring-white/20">SA</div>
-                    <?php endif; ?>
-                    <span class="leading-tight text-white">
-                        <span class="block text-base font-extrabold"><?= esc($settings['nama_lksa'] ?? 'LKSA Harapan Bangsa') ?></span>
-                        <span class="block text-[11px] font-semibold uppercase tracking-[0.2em] text-indigo-300">SAHABAT-NG</span>
-                    </span>
-                </a>
-
-                <div class="max-w-md">
-                    <p class="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-indigo-200 ring-1 ring-white/10">
-                        <i class="fa-solid fa-shield-halved"></i> Sistem Administrasi Terpadu
-                    </p>
-                    <h1 class="text-4xl font-extrabold leading-tight text-white xl:text-5xl">
-                        Satu panel untuk<br>semua kebutuhan<br>
-                        <span class="text-indigo-400">LKSA Anda.</span>
-                    </h1>
-                    <p class="mt-5 text-sm leading-relaxed text-slate-300">
-                        Kelola data anak, pengurus, akademik, penilaian karakter, hingga laporan dalam satu sistem yang rapi dan aman.
-                    </p>
-
-                    <div class="mt-8 grid grid-cols-2 gap-3 text-sm">
-                        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <i class="fa-solid fa-children mb-2 text-indigo-400"></i>
-                            <p class="font-semibold text-white">Data Terpadu</p>
-                            <p class="mt-1 text-xs text-slate-400">Anak, pengurus, dan akun terhubung.</p>
-                        </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <i class="fa-solid fa-chart-line mb-2 text-sky-400"></i>
-                            <p class="font-semibold text-white">Penilaian Karakter</p>
-                            <p class="mt-1 text-xs text-slate-400">Pantau perkembangan secara berkala.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <p class="text-xs text-slate-400">&copy; <?= date('Y') ?> <?= esc($settings['nama_lksa'] ?? 'LKSA Harapan Bangsa') ?></p>
+<body class="min-h-full bg-stone-100 font-sans text-stone-800 antialiased">
+    <div class="flex min-h-screen">
+        <div class="hidden w-1/2 flex-col justify-between bg-stone-900 p-10 lg:flex">
+            <a href="<?= site_url('/') ?>" class="flex items-center gap-3">
+                <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-600 text-lg text-white">
+                    <i class="fa-solid fa-hands-holding-child"></i>
+                </span>
+                <span class="text-lg font-extrabold text-white">SAHABAT-NG</span>
+            </a>
+            <div class="max-w-md">
+                <h1 class="text-3xl font-extrabold leading-tight text-white">Sistem pendamping pengasuhan dan pembinaan anak</h1>
+                <p class="mt-4 text-sm leading-relaxed text-stone-300">
+                    Kelola data anak asuh, penilaian karakter, akademik, dan laporan dalam satu tempat yang rapi dan mudah digunakan.
+                </p>
+                <ul class="mt-8 space-y-3 text-sm text-stone-300">
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Penilaian karakter terstruktur</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Pencatatan akademik dan absensi</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-emerald-400"></i> Laporan perkembangan berkala</li>
+                </ul>
             </div>
+            <p class="text-xs text-stone-500">&copy; <?= date('Y') ?> <?= esc($settings['nama_lksa'] ?? 'SAHABAT-NG') ?></p>
         </div>
 
-        <div class="flex items-center justify-center bg-slate-50 p-6 sm:p-10">
+        <div class="flex w-full items-center justify-center px-5 py-10 lg:w-1/2">
             <div class="w-full max-w-md">
-                <div class="mb-8 flex items-center gap-3 lg:hidden">
-                    <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-600 text-sm font-bold text-white">SA</div>
-                    <div>
-                        <p class="text-sm font-extrabold text-slate-900"><?= esc($settings['nama_lksa'] ?? 'LKSA Harapan Bangsa') ?></p>
-                        <p class="text-[11px] font-semibold uppercase tracking-wider text-indigo-600">SAHABAT-NG</p>
-                    </div>
+                <div class="mb-8 text-center lg:hidden">
+                    <a href="<?= site_url('/') ?>" class="inline-flex items-center gap-2 text-emerald-700">
+                        <i class="fa-solid fa-hands-holding-child text-xl"></i>
+                        <span class="text-lg font-extrabold">SAHABAT-NG</span>
+                    </a>
                 </div>
 
-                <div class="rounded-3xl border border-slate-200 bg-white p-7 shadow-xl shadow-slate-200/60 sm:p-9">
-                    <h2 class="text-2xl font-extrabold text-slate-900">Selamat datang</h2>
-                    <p class="mt-1 text-sm text-slate-500">Masuk untuk melanjutkan ke panel Anda.</p>
+                <div class="card p-7 sm:p-8">
+                    <div class="mb-6 text-center">
+                        <?php if ($logo): ?>
+                            <img src="<?= base_url('uploads/' . $logo) ?>" alt="Logo" class="mx-auto mb-4 h-14 w-auto object-contain">
+                        <?php else: ?>
+                            <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                                <i class="fa-solid fa-right-to-bracket text-lg"></i>
+                            </div>
+                        <?php endif; ?>
+                        <h2 class="text-xl font-extrabold text-stone-900">Masuk ke akun</h2>
+                        <p class="mt-1 text-sm text-stone-500">Gunakan akun yang terdaftar di sistem.</p>
+                    </div>
 
-                    <?= view('partials/flash') ?>
+                    <?php if (session()->getFlashdata('error')): ?>
+                        <div class="mb-5 flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+                            <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                            <span><?= esc(session()->getFlashdata('error')) ?></span>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (session()->getFlashdata('success')): ?>
+                        <div class="mb-5 flex items-start gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+                            <i class="fa-solid fa-circle-check mt-0.5"></i>
+                            <span><?= esc(session()->getFlashdata('success')) ?></span>
+                        </div>
+                    <?php endif; ?>
 
-                    <form method="post" action="<?= site_url('login') ?>" class="mt-6 space-y-4" x-data="{ showPassword: false }">
+                    <form action="<?= site_url('auth/login') ?>" method="post" class="space-y-4" x-data="{ show: false }">
                         <?= csrf_field() ?>
 
                         <div>
-                            <label for="username" class="mb-1.5 block text-sm font-semibold text-slate-700">Username</label>
+                            <label for="username" class="mb-1 block text-sm font-medium text-stone-600">Nama pengguna</label>
                             <div class="relative">
-                                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-user"></i></span>
-                                <input id="username" name="username" type="text" value="<?= esc(old('username')) ?>" required autofocus autocomplete="username"
-                                       class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-3 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20"
-                                       placeholder="Masukkan username">
+                                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-stone-400"><i class="fa-solid fa-user text-sm"></i></span>
+                                <input type="text" id="username" name="username" value="<?= old('username') ?>" required autocomplete="username"
+                                    class="w-full rounded-xl border border-stone-200 bg-stone-50 py-2.5 pl-10 pr-4 text-sm text-stone-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
+                                    placeholder="Masukkan nama pengguna">
                             </div>
                         </div>
 
                         <div>
-                            <label for="password" class="mb-1.5 block text-sm font-semibold text-slate-700">Password</label>
+                            <label for="password" class="mb-1 block text-sm font-medium text-stone-600">Kata sandi</label>
                             <div class="relative">
-                                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400"><i class="fa-solid fa-lock"></i></span>
-                                <input id="password" name="password" type="password" :type="showPassword ? 'text' : 'password'" required autocomplete="current-password"
-                                       class="w-full rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-10 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20"
-                                       placeholder="Masukkan password">
-                                <button type="button" @click="showPassword = !showPassword" class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-slate-400 hover:text-slate-600" tabindex="-1">
-                                    <i class="fa-solid" :class="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                                <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-stone-400"><i class="fa-solid fa-lock text-sm"></i></span>
+                                <input :type="show ? 'text' : 'password'" id="password" name="password" required autocomplete="current-password"
+                                    class="w-full rounded-xl border border-stone-200 bg-stone-50 py-2.5 pl-10 pr-11 text-sm text-stone-800 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20"
+                                    placeholder="Masukkan kata sandi">
+                                <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 flex items-center pr-3 text-stone-400 hover:text-stone-600" :aria-label="show ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'">
+                                    <i class="fa-solid" :class="show ? 'fa-eye-slash' : 'fa-eye'"></i>
                                 </button>
                             </div>
                         </div>
 
                         <div>
-                            <label for="akses" class="mb-1.5 block text-sm font-semibold text-slate-700">Masuk sebagai</label>
-                            <select id="akses" name="akses" required
-                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm text-slate-800 outline-none transition focus:border-indigo-500 focus:bg-white focus:ring-2 focus:ring-indigo-500/20">
-                                <?php foreach ($aksesOptions as $value => $label): ?>
+                            <label for="akses" class="mb-1 block text-sm font-medium text-stone-600">Masuk sebagai</label>
+                            <select id="akses" name="akses" class="input">
+                                <?php foreach (['admin' => 'Admin / Pengurus', 'guru' => 'Guru / Pengajar', 'anak' => 'Anak Asuh'] as $value => $label): ?>
                                     <option value="<?= esc($value) ?>" <?= old('akses') === $value ? 'selected' : '' ?>><?= esc($label) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
 
-                        <button type="submit" class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3 text-sm font-bold text-white shadow-lg shadow-indigo-600/25 transition hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        <button type="submit" class="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
                             <i class="fa-solid fa-right-to-bracket"></i> Masuk
                         </button>
                     </form>
                 </div>
 
-                <p class="mt-6 text-center text-sm text-slate-500">
-                    <a href="<?= site_url('/') ?>" class="font-semibold text-indigo-600 hover:text-indigo-700"><i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke beranda</a>
+                <p class="mt-6 text-center text-sm text-stone-500">
+                    <a href="<?= site_url('/') ?>" class="font-semibold text-emerald-700 hover:text-emerald-800"><i class="fa-solid fa-arrow-left mr-1"></i> Kembali ke beranda</a>
                 </p>
             </div>
         </div>

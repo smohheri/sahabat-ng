@@ -28,7 +28,7 @@ Aplikasi ini mengelola data anak asuh, pengurus, pengajar, akademik (mata pelaja
 |---|---|
 | Framework | CodeIgniter 4 (PHP 8.2+) |
 | Database | MySQL |
-| UI | Tailwind CSS + Alpine.js (via CDN) |
+| UI | Tailwind CSS + Alpine.js (via CDN) + stylesheet kustom `public/assets/css/app.css` (design system emerald/stone, Plus Jakarta Sans) |
 | Chart | Chart.js (via CDN) |
 | Ikon | Font Awesome 6 (via CDN) |
 | PDF | mPDF (`mpdf/mpdf`) |
